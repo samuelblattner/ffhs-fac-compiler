@@ -1,0 +1,46 @@
+import java_cup.runtime.*;
+
+/* Preliminaries to set up and use the scanner.  */
+init with {: scanner.init();              :};
+scan with {: return scanner.next_token(); :};
+
+terminal            STRING_LITERAL, UCHAR, ANYCHAR, RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SQUOTE, DQUOTE, SEMICOLON;
+terminal            VARIABLE, NUMBER, QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
+terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, COMMA, SPEAKER, OPERATOR;
+non terminal        instruction, assignment, conditional, function, loop, functioncall, value, condition, range, block, varlist, valuelist, builtin, operation, operator, comparison, comparator;
+
+precedence left DQUOTE, SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
+
+/* Productions */
+instruction     ::= instruction SEMICOLON instruction
+                    | conditional instruction
+                    | function instruction
+                    | conditional
+                    | function
+                    | assignment
+                    | loop
+                    | functioncall
+                    | builtin;
+
+assignment      ::= value RARROW VARIABLE;
+conditional     ::= QMARK condition EMJ_SMILE block
+                    | QMARK condition EMJ_SMILE block EMJ_SAD block;
+function        ::= FLASH VARIABLE BOX_OUT varlist block;
+loop            ::= CYCLE condition block
+                    | CYCLE VARIABLE range block;
+functioncall    ::= SPIN VARIABLE BOX_IN valuelist;
+
+value           ::= VARIABLE | STRING_LITERAL | NUMBER | operation | functioncall;
+condition       ::= comparison | operation;
+range           ::= LRARROW NUMBER RDARROW | LRARROW NUMBER RDARROWSTOP NUMBER;
+block           ::= RHAND instruction HALTHAND;
+
+varlist         ::= EMPTY | VARIABLE | VARIABLE COMMA varlist;
+valuelist       ::= EMPTY | value | value COMMA valuelist;
+
+comparison      ::= value comparator value;
+operator        ::= PLUS | MINUS | ASTERISK | DIV | HAT | PERCENT;
+comparator      ::= GT | GTE | LT | LTE | EE | NE;
+operation       ::= value operator value;
+
+builtin        ::= SPEAKER value;
