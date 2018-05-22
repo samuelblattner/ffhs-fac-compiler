@@ -15,10 +15,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-mainClassName = "Lexer"
+mainClassName = "EmoticaScanner"
 applicationDefaultJvmArgs = ["-Dgreeting.language=en"]
-
-
 
 buildscript {
     repositories {
@@ -33,3 +31,66 @@ buildscript {
 }
 
 apply plugin: 'org.xbib.gradle.plugin.jflex'
+
+
+task packscanner(type: Copy) {
+    group 'build'
+
+        from "${buildDir}/generated-src/jflex/specification/EmoticaScanner.java",
+                "${projectDir}/src/main/java/sym.java",
+                "${projectDir}/src/main/jflex/specification/emotica.jflex",
+                "${projectDir}/programs/helloworld.emo"
+
+
+        into "${buildDir}/submissions/ffhs-fac-samuelblattner-scanner"
+
+}
+task zipscanner(type: Zip) {
+    group 'build'
+
+    mustRunAfter "packscanner"
+
+    archiveName = "ffhs-fac-samuelblattner-scanner.zip"
+    from file("${buildDir}/submissions/ffhs-fac-samuelblattner-scanner")
+    destinationDir file("${buildDir}/submissions")
+
+}
+
+task buildCUP(dependsOn:jar) << {
+    group 'build'
+    javaexec {
+        main="-jar";
+        args = [
+           "lib/java-cup-11b.jar",
+           "-destdir",
+           "src/main/java/",
+           "src/main/jflex/specification/emotica.cup"
+        ]
+    }
+}
+
+task packparser(type: Copy) {
+    group 'build'
+
+    from "${buildDir}/generated-src/jflex/specification/EmoticaScanner.java",
+            "${projectDir}/src/main/java/sym.java",
+            "${projectDir}/src/main/java/parser.java",
+            "${projectDir}/src/main/java/SyntaxChecker.java",
+            "${projectDir}/src/main/jflex/specification/emotica.jflex",
+            "${projectDir}/src/main/jflex/specification/emotica.cup",
+            "${projectDir}/programs/helloworld.emo"
+
+
+    into "${buildDir}/submissions/ffhs-fac-samuelblattner-parser"
+}
+
+task zipparser(type: Zip) {
+    group 'build'
+
+    mustRunAfter "packparser"
+
+    archiveName = "ffhs-fac-samuelblattner-parser.zip"
+    from file("${buildDir}/submissions/ffhs-fac-samuelblattner-parser")
+    destinationDir file("${buildDir}/submissions")
+
+}

@@ -39,6 +39,7 @@ public class sym {
   public static final int EE = 35;
   public static final int NE = 36;
   public static final int UCHAR = 3;
+  public static final int OPERATOR = 39;
   public static final int HALTHAND = 10;
   public static final int BOX_IN = 25;
   public static final int RDARROWSTOP = 8;
@@ -84,7 +85,8 @@ public class sym {
   "EE",
   "NE",
   "COMMA",
-  "SPEAKER"
+  "SPEAKER",
+  "OPERATOR"
   };
 }
 

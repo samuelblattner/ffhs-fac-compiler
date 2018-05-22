@@ -1,8 +1,8 @@
 import java_cup.runtime.*;
 
 /* Preliminaries to set up and use the scanner.  */
-init with {: scanner.init();              :};
-scan with {: return scanner.next_token(); :};
+/*init with {: scanner.init();              :};
+scan with {: return scanner.next_token(); :};*/
 
 terminal            STRING_LITERAL, UCHAR, ANYCHAR, RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SQUOTE, DQUOTE, SEMICOLON;
 terminal            VARIABLE, NUMBER, QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
@@ -32,8 +32,8 @@ functioncall    ::= SPIN VARIABLE BOX_IN valuelist;
 
 value           ::= VARIABLE | STRING_LITERAL | NUMBER | operation | functioncall;
 condition       ::= comparison | operation;
-range           ::= LRARROW NUMBER RDARROW | LRARROW NUMBER RDARROWSTOP NUMBER;
-block           ::= RHAND instruction HALTHAND;
+range           ::= LRARROW NUMBER RDARROW NUMBER | LRARROW NUMBER RDARROWSTOP NUMBER;
+block           ::= RHAND instruction HALTHAND | RHAND instruction SEMICOLON HALTHAND;
 
 varlist         ::= EMPTY | VARIABLE | VARIABLE COMMA varlist;
 valuelist       ::= EMPTY | value | value COMMA valuelist;

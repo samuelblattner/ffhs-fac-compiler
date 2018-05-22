@@ -6,13 +6,11 @@ import java_cup.runtime.*;
  */
 %%
 
-%class Lexer
+%class EmoticaScanner
 %unicode
 %cup
 %line
 %column
-%standalone
-%debug
 
 %{
   StringBuffer string = new StringBuffer();
