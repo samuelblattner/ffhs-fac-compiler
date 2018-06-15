@@ -1,0 +1,4 @@
+mainClassName = "EmoticaShell"
+run{
+    standardInput = System.in
+}

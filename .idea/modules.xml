@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/emotica.iml" filepath="$PROJECT_DIR$/.idea/modules/emotica.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/emotica-shell/emotica-shell.iml" filepath="$PROJECT_DIR$/.idea/modules/emotica-shell/emotica-shell.iml" group="shell" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/emotica_main.iml" filepath="$PROJECT_DIR$/.idea/modules/emotica_main.iml" group="emotica" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/emotica_test.iml" filepath="$PROJECT_DIR$/.idea/modules/emotica_test.iml" group="emotica" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shell/shell_main.iml" filepath="$PROJECT_DIR$/.idea/modules/shell/shell_main.iml" group="shell" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shell/shell_test.iml" filepath="$PROJECT_DIR$/.idea/modules/shell/shell_test.iml" group="shell" />
     </modules>
   </component>
 </project>

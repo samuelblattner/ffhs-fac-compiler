@@ -1,22 +1,5 @@
 version '1.0'
 
-apply plugin: 'java'
-apply plugin: 'application'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-
-}
-
-dependencies {
-    compile group: 'de.jflex', name: 'jflex', version: '1.6.1'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-mainClassName = "EmoticaScanner"
-applicationDefaultJvmArgs = ["-Dgreeting.language=en"]
 
 buildscript {
     repositories {
@@ -32,6 +15,60 @@ buildscript {
 
 apply plugin: 'org.xbib.gradle.plugin.jflex'
 
+
+jflex {
+    source = project.file("language")
+    generateDir = project.file("$project.buildDir/generated-src")
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'application'
+    applicationDefaultJvmArgs = ["-Dgreeting.language=en"]
+
+    repositories {
+        mavenCentral()
+        flatDir {
+            dirs "$rootDir/lib"
+        }
+    }
+    sourceSets {
+        main {
+            java {
+                srcDirs = [
+                        "$rootDir/build/generated-src",
+                        "$rootDir/shell/src/main/java"
+                ]
+            }
+        }
+    }
+
+    dependencies {
+        compile name: 'java-cup-11b'
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+
+    run{
+        standardInput = System.in
+    }
+
+}
+
+task buildCUP() {
+    group 'gaga'
+    javaexec {
+        main="-jar"
+        args = [
+                "lib/java-cup-11b.jar",
+                "-destdir",
+                "build/generated-src/",
+                "-parser",
+                "EmoticaParser",
+                "language/emotica.cup"
+        ]
+    }
+}
 
 task packscanner(type: Copy) {
     group 'build'
@@ -56,23 +93,12 @@ task zipscanner(type: Zip) {
 
 }
 
-task buildCUP(dependsOn:jar) << {
-    group 'build'
-    javaexec {
-        main="-jar";
-        args = [
-           "lib/java-cup-11b.jar",
-           "-destdir",
-           "src/main/java/",
-           "src/main/jflex/specification/emotica.cup"
-        ]
-    }
-}
+
 
 task packparser(type: Copy) {
     group 'build'
 
-    from "${buildDir}/generated-src/jflex/specification/EmoticaScanner.java",
+    from "${buildDir}/generated-src/EmoticaScanner.java",
             "${projectDir}/src/main/java/sym.java",
             "${projectDir}/src/main/java/parser.java",
             "${projectDir}/src/main/java/SyntaxChecker.java",

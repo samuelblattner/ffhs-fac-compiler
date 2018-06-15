@@ -17,17 +17,24 @@ import java_cup.runtime.*;
 
   StringBuffer assignmentValue = new StringBuffer();
 
+  ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
+
   private Symbol symbol(int type) {
-    return new Symbol(type, yyline, yycolumn);
+    return symbolFactory.newSymbol(String.format("%d", type), type, new ComplexSymbolFactory.Location(yyline, yycolumn), new ComplexSymbolFactory.Location(yyline, yycolumn + 1));
   }
   private Symbol symbol(int type, Object value) {
-    return new Symbol(type, yyline, yycolumn, value);
+    return symbolFactory.newSymbol(String.format("%d", type), type, new ComplexSymbolFactory.Location(yyline, yycolumn), new ComplexSymbolFactory.Location(yyline, yycolumn + 1), value);
   }
 %}
 
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
 WhiteSpace     = {LineTerminator} | [ \t\f]
+
+%eofval{
+  return symbol(sym.EOF);
+%eofval}
+
 
 %state STRING
 

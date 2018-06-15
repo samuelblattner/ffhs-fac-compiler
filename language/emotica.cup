@@ -4,12 +4,12 @@ import java_cup.runtime.*;
 /*init with {: scanner.init();              :};
 scan with {: return scanner.next_token(); :};*/
 
-terminal            STRING_LITERAL, UCHAR, ANYCHAR, RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SQUOTE, DQUOTE, SEMICOLON;
+terminal            STRING_LITERAL, RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SEMICOLON;
 terminal            VARIABLE, NUMBER, QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
-terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, COMMA, SPEAKER, OPERATOR;
+terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, COMMA, SPEAKER;
 non terminal        instruction, assignment, conditional, function, loop, functioncall, value, condition, range, block, varlist, valuelist, builtin, operation, operator, comparison, comparator;
 
-precedence left DQUOTE, SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
+precedence left SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
 
 /* Productions */
 instruction     ::= instruction SEMICOLON instruction
@@ -22,7 +22,7 @@ instruction     ::= instruction SEMICOLON instruction
                     | functioncall
                     | builtin;
 
-assignment      ::= value RARROW VARIABLE;
+assignment      ::= value RARROW VARIABLE SEMICOLON;
 conditional     ::= QMARK condition EMJ_SMILE block
                     | QMARK condition EMJ_SMILE block EMJ_SAD block;
 function        ::= FLASH VARIABLE BOX_OUT varlist block;

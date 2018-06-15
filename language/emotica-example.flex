@@ -15,11 +15,11 @@ import java_cup.runtime.*;
 %{
   StringBuffer string = new StringBuffer();
 
-  private Symbol symbol(int type) {
-    return new Symbol(type, yyline, yycolumn);
+  private ComplexSymbol symbol(int type) {
+    return new ComplexSymbol(type, new Symbol(yyline, yycolumn), new Symbol(yyline, yycolumn));
   }
-  private Symbol symbol(int type, Object value) {
-    return new Symbol(type, yyline, yycolumn, value);
+  private ComplexSymbol symbol(int type, Object value) {
+    return new ComplexSymbol(type, new Symbol(yyline, yycolumn), new Symbol(yyline, yycolumn), value);
   }
 %}
 

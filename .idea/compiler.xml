@@ -2,8 +2,30 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="emotica-shell_main" target="1.8" />
+      <module name="emotica-shell_test" target="1.8" />
       <module name="emotica_main" target="1.8" />
       <module name="emotica_test" target="1.8" />
+      <module name="java-shell_main" target="1.8" />
+      <module name="java-shell_test" target="1.8" />
+      <module name="java-syntax_main" target="1.8" />
+      <module name="java-syntax_test" target="1.8" />
+      <module name="java_main" target="1.8" />
+      <module name="java_test" target="1.8" />
+      <module name="main_main" target="1.8" />
+      <module name="main_test" target="1.8" />
+      <module name="shell_main" target="1.8" />
+      <module name="shell_test" target="1.8" />
+      <module name="src_,shell_main" target="1.8" />
+      <module name="src_,shell_test" target="1.8" />
+      <module name="src_main" target="1.8" />
+      <module name="src_main_java_shell_main" target="1.8" />
+      <module name="src_main_java_shell_test" target="1.8" />
+      <module name="src_shell_main" target="1.8" />
+      <module name="src_shell_test" target="1.8" />
+      <module name="src_test" target="1.8" />
+      <module name="syntax_main" target="1.8" />
+      <module name="syntax_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
