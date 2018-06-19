@@ -4,9 +4,10 @@
     <output url="file://$MODULE_DIR$/../../out/production/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../build/generated-src/jflex" />
-    <content url="file://$MODULE_DIR$/../../src/main">
+    <content url="file://$MODULE_DIR$/../../src/main/java">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../../src/main/resources" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

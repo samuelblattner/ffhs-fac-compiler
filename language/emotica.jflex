@@ -1,4 +1,6 @@
 /* JFlex example: partial Java language lexer specification */
+package ch.samuelblattner.ffhs.fac.emotica.parsing;
+
 import java_cup.runtime.*;
 
 /**
@@ -6,6 +8,7 @@ import java_cup.runtime.*;
  */
 %%
 
+%public
 %class EmoticaScanner
 %unicode
 %cup
@@ -23,7 +26,11 @@ import java_cup.runtime.*;
     return symbolFactory.newSymbol(String.format("%d", type), type, new ComplexSymbolFactory.Location(yyline, yycolumn), new ComplexSymbolFactory.Location(yyline, yycolumn + 1));
   }
   private Symbol symbol(int type, Object value) {
-    return symbolFactory.newSymbol(String.format("%d", type), type, new ComplexSymbolFactory.Location(yyline, yycolumn), new ComplexSymbolFactory.Location(yyline, yycolumn + 1), value);
+    return symbolFactory.newSymbol(
+        String.format("%d", type), type, new ComplexSymbolFactory.Location(yyline, yycolumn),
+        new ComplexSymbolFactory.Location(yyline, yycolumn + 1),
+        (value != null ? value : yytext())
+        );
   }
 %}
 
@@ -76,7 +83,7 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
   {WhiteSpace}                   { /* ignore */ }
 
   /* Variable */
-  [A-Za-z_][A-Za-z0-9_]+     { return symbol(sym.VARIABLE); }
+  [A-Za-z_][A-Za-z0-9_]+     { return symbol(sym.VARIABLE, null); }
 
   /* Numbers */
   \d*\.?\d+                  { return symbol(sym.NUMBER); }

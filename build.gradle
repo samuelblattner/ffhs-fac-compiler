@@ -18,7 +18,7 @@ apply plugin: 'org.xbib.gradle.plugin.jflex'
 
 jflex {
     source = project.file("language")
-    generateDir = project.file("$project.buildDir/generated-src")
+    generateDir = project.file("$project.buildDir/generated-src/ch/samuelblattner/ffhs/fac/emotica/parsing")
 }
 
 subprojects {
@@ -37,7 +37,8 @@ subprojects {
             java {
                 srcDirs = [
                         "$rootDir/build/generated-src",
-                        "$rootDir/shell/src/main/java"
+                        "$rootDir/shell/src/main/java",
+                        "$rootDir/src/main/java"
                 ]
             }
         }
@@ -56,13 +57,13 @@ subprojects {
 }
 
 task buildCUP() {
-    group 'gaga'
+    group 'build'
     javaexec {
         main="-jar"
         args = [
                 "lib/java-cup-11b.jar",
                 "-destdir",
-                "build/generated-src/",
+                "build/generated-src/ch/samuelblattner/ffhs/fac/emotica/parsing",
                 "-parser",
                 "EmoticaParser",
                 "language/emotica.cup"

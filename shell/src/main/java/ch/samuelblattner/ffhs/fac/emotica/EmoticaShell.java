@@ -1,6 +1,11 @@
-import java_cup.runtime.ComplexSymbolFactory;
+package ch.samuelblattner.ffhs.fac.emotica;
 
+import java_cup.runtime.ComplexSymbolFactory;
 import java.io.*;
+
+import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaParser;
+import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaScanner;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.AbstractInstruction;
 
 
 /**
@@ -57,13 +62,16 @@ public class EmoticaShell {
             }
     }
 
+    private void validateInput(AbstractInstruction rootInstruction) {
+
+    }
+
     private void readInput() {
 
         String line;
 
         while (true) {
             this.output.print(PROMPT);
-            this.output.flush();
 
             try {
                 line = inputReader.readLine();
@@ -79,7 +87,6 @@ public class EmoticaShell {
         }
 
         System.out.println(stringBuilder.toString());
-
         parseInput(stringBuilder.toString());
     }
 
@@ -97,6 +104,5 @@ public class EmoticaShell {
             System.out.println(ex);
             System.exit(1);
         }
-
     }
 }

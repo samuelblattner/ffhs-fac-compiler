@@ -1,13 +1,24 @@
+package ch.samuelblattner.ffhs.fac.emotica.parsing;
+
 import java_cup.runtime.*;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.*;
+import java.util.ArrayList;
+
 
 /* Preliminaries to set up and use the scanner.  */
 /*init with {: scanner.init();              :};
 scan with {: return scanner.next_token(); :};*/
 
-terminal            STRING_LITERAL, RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SEMICOLON;
-terminal            VARIABLE, NUMBER, QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
+terminal            String STRING_LITERAL, VARIABLE;
+terminal            Double NUMBER;
+
+terminal            RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SEMICOLON;
+terminal            QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
 terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, COMMA, SPEAKER;
-non terminal        instruction, assignment, conditional, function, loop, functioncall, value, condition, range, block, varlist, valuelist, builtin, operation, operator, comparison, comparator;
+
+non terminal        ArrayList<String> varlist;
+non terminal        ArrayList<AbstractInstruction> valuelist;
+non terminal        instruction, assignment, conditional, function, loop, functioncall, value, condition, range, block, builtin, operation, operator, comparison, comparator;
 
 precedence left SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
 
@@ -22,21 +33,27 @@ instruction     ::= instruction SEMICOLON instruction
                     | functioncall
                     | builtin;
 
-assignment      ::= value RARROW VARIABLE SEMICOLON;
+assignment      ::= value:val RARROW VARIABLE:varName SEMICOLON {: RESULT = new AssignmentInstruction(val, varName); :};
 conditional     ::= QMARK condition EMJ_SMILE block
                     | QMARK condition EMJ_SMILE block EMJ_SAD block;
 function        ::= FLASH VARIABLE BOX_OUT varlist block;
 loop            ::= CYCLE condition block
                     | CYCLE VARIABLE range block;
-functioncall    ::= SPIN VARIABLE BOX_IN valuelist;
 
-value           ::= VARIABLE | STRING_LITERAL | NUMBER | operation | functioncall;
+functioncall    ::= SPIN VARIABLE:varName BOX_IN valuelist:input {: RESULT = new FunctionCallInstruction(varName, input); :};
+
+value           ::= VARIABLE:var {: RESULT = var; :} |
+                    STRING_LITERAL:s {: RESULT = s; :} |
+                    NUMBER: n {: RESULT = n; :} |
+                    operation: o {: RESULT = o; :} |
+                    functioncall: fn {: RESULT = fn; :};
+
 condition       ::= comparison | operation;
 range           ::= LRARROW NUMBER RDARROW NUMBER | LRARROW NUMBER RDARROWSTOP NUMBER;
 block           ::= RHAND instruction HALTHAND | RHAND instruction SEMICOLON HALTHAND;
 
-varlist         ::= EMPTY | VARIABLE | VARIABLE COMMA varlist;
-valuelist       ::= EMPTY | value | value COMMA valuelist;
+varlist         ::= {: RESULT = new ArrayList<String>(); :} | EMPTY | VARIABLE:v COMMA varlist:vl {: RESULT = vl; vl.add(v); :};
+valuelist       ::= EMPTY | value COMMA valuelist;
 
 comparison      ::= value comparator value;
 operator        ::= PLUS | MINUS | ASTERISK | DIV | HAT | PERCENT;

@@ -1,4 +1,4 @@
-//package syntax;
+//package ch.samuelblattner.ffhs.fac.emotica.syntax;
 //
 //import java_cup.runtime.ComplexSymbolFactory;
 //import java.io.FileNotFoundException;
