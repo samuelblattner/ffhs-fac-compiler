@@ -2,6 +2,8 @@ package ch.samuelblattner.ffhs.fac.emotica.parsing;
 
 import java_cup.runtime.*;
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.*;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.MathOperator;
+
 import java.util.ArrayList;
 
 
@@ -18,22 +20,27 @@ terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, C
 
 non terminal        ArrayList<String> varlist;
 non terminal        ArrayList<AbstractInstruction> valuelist;
-non terminal        instruction, assignment, conditional, function, loop, functioncall, value, condition, range, block, builtin, operation, operator, comparison, comparator;
+non terminal        AbstractInstruction instruction, assignment, value, operation, functioncall, builtin;
+non terminal        MathOperator operator;
+non terminal        conditional, function, loop, condition, range, block, comparison, comparator;
 
 precedence left SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
 
+start with instruction;
+
 /* Productions */
-instruction     ::= instruction SEMICOLON instruction
+instruction     ::= instruction:i SEMICOLON instruction:il {: RESULT = new ScriptInstruction(i, il); :}
+                    | instruction:i SEMICOLON {: RESULT = new ScriptInstruction(i, null); :}
                     | conditional instruction
                     | function instruction
                     | conditional
                     | function
-                    | assignment
+                    | assignment:a {: RESULT = a; :}
                     | loop
                     | functioncall
-                    | builtin;
+                    | builtin:blt {: RESULT = blt; :};
 
-assignment      ::= value:val RARROW VARIABLE:varName SEMICOLON {: RESULT = new AssignmentInstruction(val, varName); :};
+assignment      ::= value:val RARROW VARIABLE:varName {: RESULT = new AssignmentInstruction(val, varName); :};
 conditional     ::= QMARK condition EMJ_SMILE block
                     | QMARK condition EMJ_SMILE block EMJ_SAD block;
 function        ::= FLASH VARIABLE BOX_OUT varlist block;
@@ -42,9 +49,9 @@ loop            ::= CYCLE condition block
 
 functioncall    ::= SPIN VARIABLE:varName BOX_IN valuelist:input {: RESULT = new FunctionCallInstruction(varName, input); :};
 
-value           ::= VARIABLE:var {: RESULT = var; :} |
-                    STRING_LITERAL:s {: RESULT = s; :} |
-                    NUMBER: n {: RESULT = n; :} |
+value           ::= VARIABLE:var {: RESULT = new GetVariableInstruction(var); :} |
+                    STRING_LITERAL:s {: RESULT = new StringLiteralInstruction(s); :} |
+                    NUMBER: n {: RESULT = new NumberLiteralInstruction(n); :} |
                     operation: o {: RESULT = o; :} |
                     functioncall: fn {: RESULT = fn; :};
 
@@ -56,8 +63,14 @@ varlist         ::= {: RESULT = new ArrayList<String>(); :} | EMPTY | VARIABLE:v
 valuelist       ::= EMPTY | value COMMA valuelist;
 
 comparison      ::= value comparator value;
-operator        ::= PLUS | MINUS | ASTERISK | DIV | HAT | PERCENT;
-comparator      ::= GT | GTE | LT | LTE | EE | NE;
-operation       ::= value operator value;
+operator        ::= PLUS {: RESULT = MathOperator.ADD; :}
+                    | MINUS {: RESULT = MathOperator.ADD; :}
+                    | ASTERISK  {: RESULT = MathOperator.MUL; :}
+                    | DIV  {: RESULT = MathOperator.DIV; :}
+                    | HAT  {: RESULT = MathOperator.POW; :}
+                    | PERCENT  {: RESULT = MathOperator.MOD; :};
 
-builtin        ::= SPEAKER value;
+comparator      ::= GT | GTE | LT | LTE | EE | NE;
+operation       ::= value:vl operator:op value:vr {: RESULT = new MathOperationInstruction(vl, op, vr); :};
+
+builtin        ::= SPEAKER value:v {: RESULT = new ConsoleOutputInstruction(v); :};

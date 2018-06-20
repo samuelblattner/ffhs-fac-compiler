@@ -81,6 +81,7 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
 
   /* whitespace */
   {WhiteSpace}                   { /* ignore */ }
+  {LineTerminator}                   { /* ignore */ }
 
   /* Variable */
   [A-Za-z_][A-Za-z0-9_]+     { return symbol(sym.VARIABLE, null); }

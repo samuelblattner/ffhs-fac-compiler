@@ -1,11 +1,15 @@
 package ch.samuelblattner.ffhs.fac.emotica;
 
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.EmoticaValidator;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.ValidationState;
 import java_cup.runtime.ComplexSymbolFactory;
+
 import java.io.*;
 
 import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaParser;
 import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaScanner;
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.AbstractInstruction;
+import java_cup.runtime.Symbol;
 
 
 /**
@@ -14,10 +18,16 @@ import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.AbstractInstr
 public class EmoticaShell {
 
     // Statics
+    private static final String MSG_VALIDATING = "Validating input ...";
+    private static final String MSG_VALIDATION_OK = "Validation successful.";
+    private static final String MSG_VALIDATION_WARNING = "[Warning]: Validation was successful with the following warnings:";
+    private static final String MSG_VALIDATION_FAIL = "[ERROR]: Validation failed due to the following reaons:";
+    private static final String MSG_VAR_UNDEFINED = "Variable %s has never been defined or initialized.";
+    private static final String MSG_VAR_UNUSED = "Variable %s has been initialized but never used.";
     private static final String MSG_POST_SETUP =
             "\n\n=========================================\n" +
-            "Setup Complete. Welcome to Emotica Shell!\n" +
-            "=========================================";
+                    "Setup Complete. Welcome to Emotica Shell!\n" +
+                    "=========================================";
     private static final String PROMPT = "--> ";
 
     // I/O
@@ -52,18 +62,47 @@ public class EmoticaShell {
 
     private void parseInput(String input) {
         EmoticaParser parser = new EmoticaParser(new EmoticaScanner(new StringReader(input.trim())), new ComplexSymbolFactory());
-        System.out.println(input.trim());
+        Symbol parseResult;
 
         try {
-            parser.parse();
+            parseResult = parser.parse();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
+
+        validateInput((AbstractInstruction) parseResult.value);
     }
 
-    private void validateInput(AbstractInstruction rootInstruction) {
+    private boolean processValidationResult(EmoticaValidator.ValidationResult result) {
+        if (result.getState() == ValidationState.GOOD_AS_GOLD) {
+            output.println(MSG_VALIDATION_OK);
+            return true;
+        }
+        if (result.getUndefinedVariables().size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String varName : result.getUndefinedVariables()) {
+                sb.append(String.format("- %s", String.format(MSG_VAR_UNDEFINED, varName)));
+            }
+            output.format("\n%s\n%s\n\n", MSG_VALIDATION_FAIL, sb.toString());
+            return false;
+        }
+        if (result.getUnusedVariables().size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String varName : result.getUnusedVariables()) {
+                sb.append(String.format("- %s", String.format(MSG_VAR_UNUSED, varName)));
+            }
+            output.format("\n%s\n%s\n\n", MSG_VALIDATION_WARNING, sb.toString());
+            return true;
+        }
+        return false;
+    }
 
+    private boolean validateInput(AbstractInstruction rootInstruction) {
+        output.print(MSG_VALIDATING);
+        EmoticaValidator validator = new EmoticaValidator();
+        rootInstruction.instructVisitor(validator);
+        return processValidationResult(validator.getValidationResult());
     }
 
     private void readInput() {
@@ -86,7 +125,6 @@ public class EmoticaShell {
             }
         }
 
-        System.out.println(stringBuilder.toString());
         parseInput(stringBuilder.toString());
     }
 
@@ -94,8 +132,8 @@ public class EmoticaShell {
 
         try {
             EmoticaShell shell = new EmoticaShell(
-               System.in,
-               System.out
+                    System.in,
+                    System.out
             );
             shell.execute();
             System.exit(0);

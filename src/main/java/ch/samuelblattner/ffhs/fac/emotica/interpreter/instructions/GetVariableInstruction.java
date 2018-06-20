@@ -2,26 +2,20 @@ package ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions;
 
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.ifInstructionVisitor;
 
-public class AssignmentInstruction extends AbstractInstruction {
+public class GetVariableInstruction extends AbstractInstruction {
 
-    private final String varName;
-    private final Object value;
+    private String varName;
 
-    public AssignmentInstruction(Object value, String varName) {
+    public GetVariableInstruction(String varName) {
         this.varName = varName;
-        this.value = value;
     }
 
     @Override
     public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleAssignment(this);
+        visitor.handleResolveVariable(this);
     }
 
     public String getVarName() {
         return varName;
-    }
-
-    public Object getValue() {
-        return value;
     }
 }
