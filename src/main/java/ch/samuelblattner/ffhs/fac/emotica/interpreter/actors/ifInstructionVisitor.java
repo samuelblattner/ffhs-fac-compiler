@@ -12,8 +12,11 @@ public interface ifInstructionVisitor {
     // Built-ins
     String handleStringLiteral(StringLiteralInstruction stringLiteral);
     Double handleNumberLiteral(NumberLiteralInstruction stringLiteral);
-    Double handleMathOperation(MathOperationInstruction mathOperation);
+    Object handleOperation(MathOperationInstruction mathOperation);
+    void handleFunctionDefinition(FunctionDefinitionInstruction functionDefinitionInstruction);
+    void handleLoopInstruction(LoopInstruction loopInstruction);
     Object handleFunctionCall(FunctionCallInstruction functionCallInstruction);
     void handleConsoleOutput(ConsoleOutputInstruction outputInstruction);
 
+    void handleRangeInstruction(RangeInstruction rangeInstruction);
 }

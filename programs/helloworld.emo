@@ -1,10 +1,3 @@
-💬Hello World!💬 ➡ myVariable;
-
-⚡ shoutOutToTheWorld 📤 count 👉 📢 myString + 💬 for the💬 + count + 💬. time💬 ✋
-
-♻️ counter ↔️ 0 ⏩ 100 👉
-	🌀shoutToTheWorld 📥 counter;
-✋
-
-💬Hello World!💬 ➡ myVariable;
-📢 myVariable;
+💬Hello World!💬 ➡ myString;
+⚡ shoutToTheWorld 📤 count 👉 📢 myString + 💬 for the 💬 + count + 💬. time💬 ✋
+♻ counter ↔ 0 ⏩ 100 👉 🌀shoutToTheWorld 📥 counter; ✋

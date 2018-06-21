@@ -11,8 +11,8 @@ public class StringLiteralInstruction extends AbstractInstruction {
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleStringLiteral(this);
+    public Object instructVisitor(ifInstructionVisitor visitor) {
+        return this.value;
     }
 
     public String getValue() {

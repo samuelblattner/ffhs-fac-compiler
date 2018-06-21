@@ -2,18 +2,24 @@ package ch.samuelblattner.ffhs.fac.emotica.interpreter.actors;
 
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.ValidationState;
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.*;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.valueobjects.Scope;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class EmoticaValidator implements ifInstructionVisitor {
+public class EmoticaValidator extends AbstractScopedActor {
 
     // Validation
     private ValidationResult result;
 
+    // Scope
+    private Scope scope;
+
     public EmoticaValidator() {
+        super();
         this.result = new ValidationResult();
+        this.scope = new Scope(null);
     }
 
 
@@ -32,11 +38,13 @@ public class EmoticaValidator implements ifInstructionVisitor {
     @Override
     public void handleAssignment(AssignmentInstruction assignmentInstruction) {
         this.result.assignedVariables.add(assignmentInstruction.getVarName());
+        this.scope.setVariable(assignmentInstruction.getVarName(), assignmentInstruction.getValue());
     }
 
     @Override
-    public Object handleResolveVariable(GetVariableInstruction instruction) {
+    public AbstractInstruction handleResolveVariable(GetVariableInstruction instruction) {
         String varName = instruction.getVarName();
+
         if (result.assignedVariables.contains(varName)) {
             result.usedVariables.add(varName);
         } else {
@@ -56,20 +64,69 @@ public class EmoticaValidator implements ifInstructionVisitor {
     }
 
     @Override
-    public Double handleMathOperation(MathOperationInstruction mathOperation) {
+    public Double handleOperation(MathOperationInstruction mathOperation) {
         mathOperation.getLeftValue().instructVisitor(this);
         mathOperation.getRightValue().instructVisitor(this);
         return 0d;
     }
 
     @Override
+    public void handleFunctionDefinition(FunctionDefinitionInstruction fnDefInstruction) {
+
+        this.scope.setVariable(fnDefInstruction.getFnName(), fnDefInstruction);
+        this.result.assignedVariables.add(fnDefInstruction.getFnName());
+
+        this.createInnerScope();
+        for (AbstractInstruction arg : fnDefInstruction.getArguments()) {
+            this.result.assignedVariables.add(
+                    ((GetVariableInstruction) arg).getVarName()
+            );
+        }
+
+        fnDefInstruction.getBody().instructVisitor(this);
+        this.destroyCurrentScope();
+    }
+
+    @Override
+    public void handleLoopInstruction(LoopInstruction loopInstruction) {
+        this.createInnerScope();
+        this.result.assignedVariables.add(loopInstruction.getCounter());
+        this.scope.setVariable(
+                loopInstruction.getCounter(),
+                loopInstruction.getRange().startValue()
+        );
+        loopInstruction.getBody().instructVisitor(this);
+        this.destroyCurrentScope();
+    }
+
+    @Override
     public Object handleFunctionCall(FunctionCallInstruction functionCallInstruction) {
+        if (this.result.assignedVariables.contains(functionCallInstruction.getFnName())) {
+            this.result.usedVariables.add(functionCallInstruction.getFnName());
+        } else {
+            this.result.undefinedVariables.add(functionCallInstruction.getFnName());
+        }
+        createInnerScope();
+        for (AbstractInstruction arg : functionCallInstruction.getArguments()) {
+            String varName = ((GetVariableInstruction) arg).getVarName();
+            if (this.result.assignedVariables.contains(varName)) {
+                this.result.usedVariables.add(varName);
+            } else {
+                this.result.undefinedVariables.add(varName);
+            }
+        }
+        destroyCurrentScope();
         return null;
     }
 
     @Override
     public void handleConsoleOutput(ConsoleOutputInstruction outputInstruction) {
         outputInstruction.getOutputValue().instructVisitor(this);
+    }
+
+    @Override
+    public void handleRangeInstruction(RangeInstruction rangeInstruction) {
+
     }
 
     public ValidationResult getValidationResult() {

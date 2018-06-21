@@ -68,8 +68,8 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
   \U01F449                  { return symbol(sym.RHAND); }
   \U01F4AC                  { string.setLength(0); yybegin(STRING); }
 
-  \u2194\uFE0F               { return symbol(sym.LRARROW); }
-  \u267B\uFE0F               { return symbol(sym.CYCLE); }
+  \u2194                     { return symbol(sym.LRARROW); }
+  \u267B                     { return symbol(sym.CYCLE); }
 
   /* Operators */
   \+                        { return symbol(sym.PLUS); }
@@ -87,7 +87,7 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
   [A-Za-z_][A-Za-z0-9_]+     { return symbol(sym.VARIABLE, null); }
 
   /* Numbers */
-  \d*\.?\d+                  { return symbol(sym.NUMBER); }
+  \d*\.?\d+                  { return symbol(sym.NUMBER, yytext()); }
 }
 
 

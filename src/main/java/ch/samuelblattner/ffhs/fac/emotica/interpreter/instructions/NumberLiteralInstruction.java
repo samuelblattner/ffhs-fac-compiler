@@ -6,16 +6,21 @@ public class NumberLiteralInstruction extends AbstractInstruction {
 
     private Double value;
 
-    public NumberLiteralInstruction(Double value) {
-        this.value = value;
+    public NumberLiteralInstruction(String value) {
+        this.value = Double.valueOf(value);
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleNumberLiteral(this);
+    public Object instructVisitor(ifInstructionVisitor visitor) {
+        return this.value;
     }
 
     public Double getValue() {
         return value;
     }
+
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
 }

@@ -12,17 +12,18 @@ import java.util.ArrayList;
 scan with {: return scanner.next_token(); :};*/
 
 terminal            String STRING_LITERAL, VARIABLE;
-terminal            Double NUMBER;
+terminal            String NUMBER;
 
 terminal            RARROW, RDARROW, LRARROW, RDARROWSTOP, RHAND, HALTHAND, SEMICOLON;
 terminal            QMARK, ASTERISK, PLUS, MINUS, DIV, HAT, PERCENT, EMPTY, CYCLE, BOX_IN, BOX_OUT;
 terminal            EMJ_SMILE, EMJ_SAD, FLASH, SPIN, GT, GTE, LT, LTE, EE, NE, COMMA, SPEAKER;
 
-non terminal        ArrayList<String> varlist;
 non terminal        ArrayList<AbstractInstruction> valuelist;
-non terminal        AbstractInstruction instruction, assignment, value, operation, functioncall, builtin;
+non terminal        AbstractInstruction instruction, assignment, value, operation, functioncall, builtin, function, loop;
+non terminal        RangeInstruction range;
 non terminal        MathOperator operator;
-non terminal        conditional, function, loop, condition, range, block, comparison, comparator;
+non terminal        ScriptInstruction block;
+non terminal        conditional, condition, comparison, comparator;
 
 precedence left SEMICOLON, PERCENT, DIV, HAT, MINUS, PLUS, ASTERISK, COMMA;
 
@@ -31,36 +32,41 @@ start with instruction;
 /* Productions */
 instruction     ::= instruction:i SEMICOLON instruction:il {: RESULT = new ScriptInstruction(i, il); :}
                     | instruction:i SEMICOLON {: RESULT = new ScriptInstruction(i, null); :}
-                    | conditional instruction
-                    | function instruction
+                    | function:fn {: RESULT = fn; :} instruction: i {: RESULT = new ScriptInstruction(fn, i); :}
+                    | function:fn {: RESULT = fn; :}
                     | conditional
-                    | function
                     | assignment:a {: RESULT = a; :}
-                    | loop
-                    | functioncall
+                    | loop: l {: RESULT = l; :}
+                    | functioncall:fc {: RESULT = fc; :}
                     | builtin:blt {: RESULT = blt; :};
 
 assignment      ::= value:val RARROW VARIABLE:varName {: RESULT = new AssignmentInstruction(val, varName); :};
 conditional     ::= QMARK condition EMJ_SMILE block
                     | QMARK condition EMJ_SMILE block EMJ_SAD block;
-function        ::= FLASH VARIABLE BOX_OUT varlist block;
+
+function        ::= FLASH VARIABLE:fnName BOX_OUT valuelist:args block:b {: RESULT = new FunctionDefinitionInstruction(fnName, args, b); :};
+
 loop            ::= CYCLE condition block
-                    | CYCLE VARIABLE range block;
+                    | CYCLE VARIABLE:c range:r block:b {: RESULT = new LoopInstruction(c, r, b); :};
 
 functioncall    ::= SPIN VARIABLE:varName BOX_IN valuelist:input {: RESULT = new FunctionCallInstruction(varName, input); :};
 
 value           ::= VARIABLE:var {: RESULT = new GetVariableInstruction(var); :} |
                     STRING_LITERAL:s {: RESULT = new StringLiteralInstruction(s); :} |
-                    NUMBER: n {: RESULT = new NumberLiteralInstruction(n); :} |
-                    operation: o {: RESULT = o; :} |
-                    functioncall: fn {: RESULT = fn; :};
+                    NUMBER:n {: RESULT = new NumberLiteralInstruction(n); :} |
+                    operation:o {: RESULT = o; :} |
+                    functioncall:fn {: RESULT = fn; :};
 
 condition       ::= comparison | operation;
-range           ::= LRARROW NUMBER RDARROW NUMBER | LRARROW NUMBER RDARROWSTOP NUMBER;
-block           ::= RHAND instruction HALTHAND | RHAND instruction SEMICOLON HALTHAND;
+range           ::= LRARROW value:s RDARROW value:e {: RESULT = new RangeInstruction(s, e, false); :}
+                    | LRARROW value:s RDARROWSTOP value:e {: RESULT = new RangeInstruction(s, e, true); :};
 
-varlist         ::= {: RESULT = new ArrayList<String>(); :} | EMPTY | VARIABLE:v COMMA varlist:vl {: RESULT = vl; vl.add(v); :};
-valuelist       ::= EMPTY | value COMMA valuelist;
+block           ::= RHAND instruction:i HALTHAND {: RESULT = new ScriptInstruction(i, null); :};
+
+valuelist       ::= EMPTY
+                    | {: RESULT = new ArrayList<AbstractInstruction>(); :}
+                    | value:v {: RESULT = new ArrayList<AbstractInstruction>(); RESULT.add(v); :}
+                    | value:v COMMA valuelist:vl {: vl.add(v); RESULT = vl; :};
 
 comparison      ::= value comparator value;
 operator        ::= PLUS {: RESULT = MathOperator.ADD; :}

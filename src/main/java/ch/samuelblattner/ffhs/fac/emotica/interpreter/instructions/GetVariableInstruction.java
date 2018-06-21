@@ -11,8 +11,8 @@ public class GetVariableInstruction extends AbstractInstruction {
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleResolveVariable(this);
+    public Object instructVisitor(ifInstructionVisitor visitor) {
+        return visitor.handleResolveVariable(this);
     }
 
     public String getVarName() {

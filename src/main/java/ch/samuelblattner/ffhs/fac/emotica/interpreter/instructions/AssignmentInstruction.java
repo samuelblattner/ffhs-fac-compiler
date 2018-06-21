@@ -5,23 +5,24 @@ import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.ifInstructionVisito
 public class AssignmentInstruction extends AbstractInstruction {
 
     private final String varName;
-    private final Object value;
+    private final AbstractInstruction value;
 
-    public AssignmentInstruction(Object value, String varName) {
+    public AssignmentInstruction(AbstractInstruction value, String varName) {
         this.varName = varName;
         this.value = value;
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
+    public Object instructVisitor(ifInstructionVisitor visitor) {
         visitor.handleAssignment(this);
+        return null;
     }
 
     public String getVarName() {
         return varName;
     }
 
-    public Object getValue() {
+    public AbstractInstruction getValue() {
         return value;
     }
 }

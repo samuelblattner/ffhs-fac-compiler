@@ -20,8 +20,9 @@ public class ScriptInstruction extends AbstractInstruction {
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
+    public Object instructVisitor(ifInstructionVisitor visitor) {
         visitor.handleScript(this);
+        return null;
     }
 
     public List<AbstractInstruction> getInstructions() {

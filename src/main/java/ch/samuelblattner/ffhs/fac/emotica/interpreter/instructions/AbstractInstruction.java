@@ -4,6 +4,6 @@ import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.ifInstructionVisito
 
 public abstract class AbstractInstruction {
 
-    public abstract void instructVisitor(ifInstructionVisitor visitor);
+    public abstract Object instructVisitor(ifInstructionVisitor visitor);
 
 }

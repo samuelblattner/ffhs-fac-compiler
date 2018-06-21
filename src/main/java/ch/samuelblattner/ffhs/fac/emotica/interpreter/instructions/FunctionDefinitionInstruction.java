@@ -1,25 +1,24 @@
 package ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions;
 
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.ifInstructionVisitor;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.MathOperator;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionCallInstruction extends AbstractInstruction {
+public class FunctionDefinitionInstruction extends AbstractInstruction {
 
     private final String fnName;
     private final List<AbstractInstruction> arguments;
+    private final ScriptInstruction body;
 
-
-    public FunctionCallInstruction(String fnName, List<AbstractInstruction> arguments) {
+    public FunctionDefinitionInstruction(String fnName, List<AbstractInstruction> arguments, ScriptInstruction body) {
         this.fnName = fnName;
         this.arguments = arguments;
+        this.body = body;
     }
 
     @Override
     public Object instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleFunctionCall(this);
+        visitor.handleFunctionDefinition(this);
         return null;
     }
 
@@ -29,5 +28,9 @@ public class FunctionCallInstruction extends AbstractInstruction {
 
     public List<AbstractInstruction> getArguments() {
         return arguments;
+    }
+
+    public ScriptInstruction getBody() {
+        return body;
     }
 }

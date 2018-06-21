@@ -11,8 +11,8 @@ public class ConsoleOutputInstruction extends AbstractInstruction {
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleConsoleOutput(this);
+    public Object instructVisitor(ifInstructionVisitor visitor) {
+        visitor.handleConsoleOutput(this); return null;
     }
 
     public AbstractInstruction getOutputValue() {

@@ -16,8 +16,8 @@ public class MathOperationInstruction extends AbstractInstruction {
     }
 
     @Override
-    public void instructVisitor(ifInstructionVisitor visitor) {
-        visitor.handleMathOperation(this);
+    public Object instructVisitor(ifInstructionVisitor visitor) {
+        return visitor.handleOperation(this);
     }
 
     public AbstractInstruction getLeftValue() {

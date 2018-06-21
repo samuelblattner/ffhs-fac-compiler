@@ -1,5 +1,6 @@
 package ch.samuelblattner.ffhs.fac.emotica;
 
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.EmoticaInterpreter;
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.EmoticaValidator;
 import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.ValidationState;
 import java_cup.runtime.ComplexSymbolFactory;
@@ -19,16 +20,15 @@ public class EmoticaShell {
 
     // Statics
     private static final String MSG_VALIDATING = "Validating input ...";
-    private static final String MSG_VALIDATION_OK = "Validation successful.";
-    private static final String MSG_VALIDATION_WARNING = "[Warning]: Validation was successful with the following warnings:";
-    private static final String MSG_VALIDATION_FAIL = "[ERROR]: Validation failed due to the following reaons:";
+    private static final String MSG_VALIDATION_OK = "Validation successful. \uD83E\uDD2A";
+    private static final String MSG_VALIDATION_WARNING = "Warning \uD83D\uDE10: Validation was successful with the following warnings:";
+    private static final String MSG_VALIDATION_FAIL = "ERROR \uD83D\uDE14: Validation failed due to the following reaons:";
     private static final String MSG_VAR_UNDEFINED = "Variable %s has never been defined or initialized.";
     private static final String MSG_VAR_UNUSED = "Variable %s has been initialized but never used.";
-    private static final String MSG_POST_SETUP =
-            "\n\n=========================================\n" +
-                    "Setup Complete. Welcome to Emotica Shell!\n" +
-                    "=========================================";
     private static final String PROMPT = "--> ";
+    private static final String MSG_POST_SETUP = "\n\n=========================================\n" +
+                                                     "Setup Complete. Welcome to Emotica Shell!\n" +
+                                                     "=========================================";
 
     // I/O
     private InputStream inputStream;
@@ -71,7 +71,11 @@ public class EmoticaShell {
             return;
         }
 
-        validateInput((AbstractInstruction) parseResult.value);
+        AbstractInstruction scriptRoot = (AbstractInstruction) parseResult.value;
+        if (validateInput(scriptRoot)) {
+            EmoticaInterpreter interpreter = new EmoticaInterpreter(inputStream, output);
+            scriptRoot.instructVisitor(interpreter);
+        }
     }
 
     private boolean processValidationResult(EmoticaValidator.ValidationResult result) {
@@ -82,7 +86,7 @@ public class EmoticaShell {
         if (result.getUndefinedVariables().size() > 0) {
             StringBuilder sb = new StringBuilder();
             for (String varName : result.getUndefinedVariables()) {
-                sb.append(String.format("- %s", String.format(MSG_VAR_UNDEFINED, varName)));
+                sb.append(String.format("- %s\n", String.format(MSG_VAR_UNDEFINED, varName)));
             }
             output.format("\n%s\n%s\n\n", MSG_VALIDATION_FAIL, sb.toString());
             return false;
@@ -90,7 +94,7 @@ public class EmoticaShell {
         if (result.getUnusedVariables().size() > 0) {
             StringBuilder sb = new StringBuilder();
             for (String varName : result.getUnusedVariables()) {
-                sb.append(String.format("- %s", String.format(MSG_VAR_UNUSED, varName)));
+                sb.append(String.format("- %s\n", String.format(MSG_VAR_UNUSED, varName)));
             }
             output.format("\n%s\n%s\n\n", MSG_VALIDATION_WARNING, sb.toString());
             return true;
@@ -131,10 +135,7 @@ public class EmoticaShell {
     public static void main(String[] args) {
 
         try {
-            EmoticaShell shell = new EmoticaShell(
-                    System.in,
-                    System.out
-            );
+            EmoticaShell shell = new EmoticaShell(System.in, System.out);
             shell.execute();
             System.exit(0);
 
