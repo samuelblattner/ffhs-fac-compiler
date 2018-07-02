@@ -2,6 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="compiler_main" target="1.8" />
+      <module name="compiler_test" target="1.8" />
       <module name="emotica-shell_main" target="1.8" />
       <module name="emotica-shell_test" target="1.8" />
       <module name="emotica_main" target="1.8" />

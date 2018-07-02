@@ -1,8 +1,8 @@
 package ch.samuelblattner.ffhs.fac.emotica.parsing;
 
 import java_cup.runtime.*;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.*;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.MathOperator;
+import ch.samuelblattner.ffhs.fac.emotica.common.instructions.*;
+import ch.samuelblattner.ffhs.fac.emotica.common.enums.MathOperator;
 
 import java.util.ArrayList;
 

@@ -1,0 +1,5 @@
+mainClassName = "ch.samuelblattner.ffhs.fac.emotica.EmoticaCompiler"
+run{
+    standardInput = System.in
+    args = ["../programs/helloworld.emo"]
+}

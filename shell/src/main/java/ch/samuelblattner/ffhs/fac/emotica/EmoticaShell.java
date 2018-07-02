@@ -1,15 +1,16 @@
 package ch.samuelblattner.ffhs.fac.emotica;
 
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.EmoticaInterpreter;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.actors.EmoticaValidator;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.enums.ValidationState;
+import ch.samuelblattner.ffhs.fac.emotica.interpreter.visitors.EmoticaInterpreter;
+import ch.samuelblattner.ffhs.fac.emotica.validator.visitors.EmoticaValidator;
+import ch.samuelblattner.ffhs.fac.emotica.common.enums.ValidationState;
+import ch.samuelblattner.ffhs.fac.emotica.validator.visitors.ValidationFormatter;
 import java_cup.runtime.ComplexSymbolFactory;
 
 import java.io.*;
 
 import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaParser;
 import ch.samuelblattner.ffhs.fac.emotica.parsing.EmoticaScanner;
-import ch.samuelblattner.ffhs.fac.emotica.interpreter.instructions.AbstractInstruction;
+import ch.samuelblattner.ffhs.fac.emotica.common.instructions.AbstractInstruction;
 import java_cup.runtime.Symbol;
 
 
@@ -20,11 +21,7 @@ public class EmoticaShell {
 
     // Statics
     private static final String MSG_VALIDATING = "Validating input ...";
-    private static final String MSG_VALIDATION_OK = "Validation successful. \uD83E\uDD2A";
-    private static final String MSG_VALIDATION_WARNING = "Warning \uD83D\uDE10: Validation was successful with the following warnings:";
-    private static final String MSG_VALIDATION_FAIL = "ERROR \uD83D\uDE14: Validation failed due to the following reaons:";
-    private static final String MSG_VAR_UNDEFINED = "Variable %s has never been defined or initialized.";
-    private static final String MSG_VAR_UNUSED = "Variable %s has been initialized but never used.";
+
     private static final String PROMPT = "--> ";
     private static final String MSG_POST_SETUP = "\n\n=========================================\n" +
                                                      "Setup Complete. Welcome to Emotica Shell!\n" +
@@ -78,35 +75,13 @@ public class EmoticaShell {
         }
     }
 
-    private boolean processValidationResult(EmoticaValidator.ValidationResult result) {
-        if (result.getState() == ValidationState.GOOD_AS_GOLD) {
-            output.println(MSG_VALIDATION_OK);
-            return true;
-        }
-        if (result.getUndefinedVariables().size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (String varName : result.getUndefinedVariables()) {
-                sb.append(String.format("- %s\n", String.format(MSG_VAR_UNDEFINED, varName)));
-            }
-            output.format("\n%s\n%s\n\n", MSG_VALIDATION_FAIL, sb.toString());
-            return false;
-        }
-        if (result.getUnusedVariables().size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (String varName : result.getUnusedVariables()) {
-                sb.append(String.format("- %s\n", String.format(MSG_VAR_UNUSED, varName)));
-            }
-            output.format("\n%s\n%s\n\n", MSG_VALIDATION_WARNING, sb.toString());
-            return true;
-        }
-        return false;
-    }
-
     private boolean validateInput(AbstractInstruction rootInstruction) {
         output.print(MSG_VALIDATING);
         EmoticaValidator validator = new EmoticaValidator();
         rootInstruction.instructVisitor(validator);
-        return processValidationResult(validator.getValidationResult());
+        EmoticaValidator.ValidationResult result = validator.getValidationResult();
+        output.println(ValidationFormatter.formatValidationResult(result));
+        return result.getState() == ValidationState.GOOD_AS_GOLD;
     }
 
     private void readInput() {

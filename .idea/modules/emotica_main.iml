@@ -3,11 +3,15 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/../../out/production/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../build/generated-src/jflex" />
+    <content url="file://$MODULE_DIR$/../../build/generated-src/jflex">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated-src/jflex" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../../src/main/java">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/../../src/main/resources" />
+    <content url="file://$MODULE_DIR$/../../src/main/resources">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

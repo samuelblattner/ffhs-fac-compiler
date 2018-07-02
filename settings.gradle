@@ -1,2 +1,4 @@
-include "shell"
+include "shell", "compiler"
 rootProject.name = 'emotica'
+include 'compiler'
+
